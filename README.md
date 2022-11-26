@@ -47,7 +47,7 @@ This is a directional API guide.
 If there is insufficient space at the specified table, then an error should be thrown.
 
 ```
-POST /guest_list/name
+POST /guest_list/:guest_id
 body: 
 {
     "table": int,
@@ -81,7 +81,7 @@ A guest may arrive with an entourage that is not the size indicated at the guest
 If the table is expected to have space for the extras, allow them to come. Otherwise, this method should throw an error.
 
 ```
-PUT /guests/name
+POST /guests/:guest_id
 body:
 {
     "accompanying_guests": int
@@ -97,7 +97,7 @@ response:
 When a guest leaves, all their accompanying guests leave as well.
 
 ```
-DELETE /guests/name
+DELETE /guests/:guest_id
 ```
 
 ### Get arrived guests

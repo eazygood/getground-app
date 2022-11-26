@@ -16,13 +16,13 @@ func NewGuestService(repository port.GuestRepository) port.GuestService {
 	return &guestService{repository: repository}
 }
 
-func (srv *guestService) Create(ctx context.Context, guest *domain.Guest) error {
-	err := srv.repository.Create(ctx, guest)
+func (srv *guestService) Create(ctx context.Context, guest *domain.Guest) (*domain.Guest, error) {
+	guest, err := srv.repository.Create(ctx, guest)
 	if err != nil {
-		return fmt.Errorf("create guest: %w", err)
+		return nil, fmt.Errorf("create guest: %w", err)
 	}
 
-	return nil
+	return guest, nil
 }
 
 func (srv *guestService) Delete(ctx context.Context, id int64) error {

@@ -9,7 +9,7 @@ import (
 type GuestRepository interface {
 	GetById(ctx context.Context, id int64) (*domain.Guest, error)
 	GetAll(ctx context.Context) ([]*domain.Guest, error)
-	Create(ctx context.Context, guest *domain.Guest) error
+	Create(ctx context.Context, guest *domain.Guest) (*domain.Guest, error)
 	Update(ctx context.Context, id int64, guest *domain.Guest) error
 	Delete(ctx context.Context, id int64) error
 }

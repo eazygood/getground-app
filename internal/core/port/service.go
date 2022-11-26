@@ -7,7 +7,7 @@ import (
 )
 
 type GuestService interface {
-	Create(ctx context.Context, u *domain.Guest) error
+	Create(ctx context.Context, g *domain.Guest) (*domain.Guest, error)
 	Update(ctx context.Context, id int64, u *domain.Guest) error
 	Delete(ctx context.Context, id int64) error
 	GetById(ctx context.Context, id int64) (*domain.Guest, error)

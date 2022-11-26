@@ -1,18 +1,20 @@
 GRANT ALL PRIVILEGES ON *.* TO 'user'@'%';
 
-CREATE TABLE `guests` (
+CREATE DATABASE IF NOT EXISTS `database`;
+
+CREATE TABLE IF NOT EXISTS `database`.`guests` (
 	`id` INT NOT NULL auto_increment,
 	`name` VARCHAR(255),
 	`accompanying_guests` SMALLINT,
-	`time_arrived` TIMESTAMP,
+	`time_arrived` TIMESTAMP NULL DEFAULT NULL,
 	PRIMARY KEY (`id`)
 ) ENGINE InnoDB DEFAULT CHARSET = `utf8`;
 
-CREATE TABLE `tables` (
+CREATE TABLE IF NOT EXISTS `database`.`tables` (
 	`id` INT NOT NULL auto_increment,
 	`seats` SMALLINT DEFAULT 0,
 	`is_busy` BOOLEAN DEFAULT 0,
-	`guest_id` INT REFERENCES `guest`(`id`) ON DELETE SET null,
+	`guest_id` INT REFERENCES `database`.`guest`(`id`) ON DELETE SET NULL,
 	INDEX par_ind (`guest_id`),
 	PRIMARY KEY (`id`)
 ) ENGINE InnoDB DEFAULT CHARSET = `utf8`;

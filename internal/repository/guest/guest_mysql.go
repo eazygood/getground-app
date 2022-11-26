@@ -21,18 +21,29 @@ func NewMysqlGuestAdapter(Conn *gorm.DB) port.GuestRepository {
 	}
 }
 
-func (m *MysqlGuestAdapter) Create(ctx context.Context, guest *domain.Guest) error {
+func (m *MysqlGuestAdapter) Create(ctx context.Context, guest *domain.Guest) (*domain.Guest, error) {
 	if err := v.GetValidator().Struct(guest); err != nil {
-		return fmt.Errorf("failed to insert guest due to validation: %v", err)
+		return nil, fmt.Errorf("failed to insert guest due to validation: %v", err)
 	}
 
 	err := m.Conn.Create(guest).Error
 
 	if err != nil {
-		return fmt.Errorf("failed to insert guest: %v", err.Error())
+		return nil, fmt.Errorf("failed to insert guest: %v", err.Error())
 	}
 
-	return nil
+	g := &domain.Guest{}
+	err = m.Conn.First(g, guest.ID).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, fmt.Errorf("record not found by id: %v", guest.ID)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete guest by id (%v) %v", guest.ID, err.Error())
+	}
+
+	return guest, nil
 }
 
 func (m *MysqlGuestAdapter) Delete(ctx context.Context, id int64) error {
