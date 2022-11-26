@@ -1,27 +1,37 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
-	"net/http"
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/eazygood/getground-app/cmd/app/server"
+	"github.com/eazygood/getground-app/internal/config"
+	"github.com/eazygood/getground-app/internal/infrastructure/log"
+	logger "github.com/sirupsen/logrus"
 )
 
 func main() {
-	// init mysql.
-	db, err := sql.Open("mysql", "user:password@/getground")
+	cfg, err := config.Load(".")
 	if err != nil {
-		log.Fatal(err)
+		logger.WithError(err).Fatal("failed to load config")
 	}
-	defer db.Close()
 
-	// ping
-	http.HandleFunc("/ping", handlerPing)
-	http.ListenAndServe(":3000", nil)
+	log.Init(cfg.Log)
+	server.Start(contextWithTermSignal(), *cfg)
+	logger.Info("server started")
 }
 
-func handlerPing(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "pong\n")
+// contextWithTermSignal returns a context that will be cancelled whenever a SIGTERM is received.
+func contextWithTermSignal() context.Context {
+	ctx, cancelFunc := context.WithCancel(context.Background())
+	go func() {
+		signals := make(chan os.Signal, 1)
+		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+		<-signals
+		logger.Info("Received TERM signal, stopping service...")
+		cancelFunc()
+	}()
+	return ctx
 }

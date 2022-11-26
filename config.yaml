@@ -1,0 +1,15 @@
+environment: testing
+log:
+  level: "DEBUG"
+  formatter: "JSON"
+server:
+  http:
+    port: 8081
+    host: getground_app # 0.0.0.0 referes to 127.0.0.1
+    shutdown_timeout: 30s
+database:
+  name: database
+  user: user
+  password: password
+  host: getground_mysql_db # localhost for local development
+  port: 3306
