@@ -13,10 +13,9 @@ CREATE TABLE IF NOT EXISTS `database`.`guests` (
 CREATE TABLE IF NOT EXISTS `database`.`tables` (
 	`id` INT NOT NULL auto_increment,
 	`seats` SMALLINT DEFAULT 0,
-	`is_busy` BOOLEAN DEFAULT 0,
-	`guest_id` INT REFERENCES `database`.`guest`(`id`) ON DELETE SET NULL,
-	INDEX par_ind (`guest_id`),
-	PRIMARY KEY (`id`)
+	`guest_id` INT NULL ,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `fk_guest` FOREIGN KEY (`guest_id`) REFERENCES `database`.`guests`(`id`) ON DELETE SET NULL ON UPDATE SET NULL
 ) ENGINE InnoDB DEFAULT CHARSET = `utf8`;
 
 -- CREATE TABLE `guestlist` (

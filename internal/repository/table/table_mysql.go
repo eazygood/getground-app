@@ -21,22 +21,43 @@ func NewMysqlTableAdapter(Conn *gorm.DB) port.TableRepository {
 	}
 }
 
-func (m *MysqlTableAdapter) Create(ctx context.Context, table domain.Table) error {
+func (m *MysqlTableAdapter) Create(ctx context.Context, table *domain.Table) (*domain.Table, error) {
 	if err := v.GetValidator().Struct(table); err != nil {
-		return fmt.Errorf("failed to insert guest due to validation: %v", err)
+		return nil, fmt.Errorf("failed to insert guest due to validation: %v", err)
 	}
 
 	err := m.Conn.Create(table).Error
 
 	if err != nil {
-		return fmt.Errorf("failed to table guest: %v", err.Error())
+		return nil, fmt.Errorf("failed to table guest: %v", err.Error())
+	}
+
+	t := &domain.Table{}
+	err = m.Conn.First(t, table.ID).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, fmt.Errorf("record not found by id: %v", table.ID)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete guest by id (%v) %v", table.ID, err.Error())
+	}
+
+	return t, nil
+}
+
+func (m *MysqlTableAdapter) Update(ctx context.Context, id int64, table domain.Table) error {
+	err := m.Conn.Model(&domain.Guest{}).Where("id = ?", id).Updates(table).Error
+
+	if err != nil {
+		return fmt.Errorf("failed to update table: %v", err.Error())
 	}
 
 	return nil
 }
 
 func (m *MysqlTableAdapter) Delete(ctx context.Context, id int64) error {
-	err := m.Conn.Delete(&domain.Guest{}, id).Error
+	err := m.Conn.Delete(&domain.Table{}, id).Error
 
 	if err != nil {
 		return fmt.Errorf("failed to delete table by id (%v) %v", id, err.Error())
@@ -45,9 +66,9 @@ func (m *MysqlTableAdapter) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (m *MysqlTableAdapter) GetAll(ctx context.Context) ([]*domain.Table, error) {
+func (m *MysqlTableAdapter) GetEmptySeats(ctx context.Context) ([]*domain.Table, error) {
 	var tables []*domain.Table
-	err := m.Conn.Find(&tables).Error
+	err := m.Conn.Where("guest_id IS NULL").Find(&tables).Error
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get list of tables: %v", err.Error())
@@ -69,14 +90,4 @@ func (m *MysqlTableAdapter) GetById(ctx context.Context, id int64) (*domain.Tabl
 	}
 
 	return table, nil
-}
-
-func (m *MysqlTableAdapter) Update(ctx context.Context, id int64, table domain.Table) error {
-	err := m.Conn.Model(&domain.Guest{}).Where("id = ?", id).Updates(table).Error
-
-	if err != nil {
-		return fmt.Errorf("failed to update table: %v", err.Error())
-	}
-
-	return nil
 }

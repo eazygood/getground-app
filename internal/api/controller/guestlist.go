@@ -24,6 +24,10 @@ func NewGuestListController(guest port.GuestService, table port.TableService) Gu
 
 // Create implements GuestListController
 func (*guestListController) Create(request *gin.Context) {
+	// check if table already has guest
+	// check available tables if seats is null
+	// compare available seats with guest's accompanying guests
+	// add guest to guest to table
 	panic("unimplemented")
 }
 

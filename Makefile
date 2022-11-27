@@ -88,4 +88,4 @@ docker-down: ## Stop docker containers and clear artefacts.
 #	docker system prune 
 
 .PHONY: build
-build: checkgosum  checkfmt  mkdirs installlint lint generate test pre-build build-go-binary
+build: checkgosum  checkfmt  mkdirs installlint lint generate test pre-build build-go-binary docker-down docker-up

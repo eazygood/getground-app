@@ -18,13 +18,13 @@ func NewTableListService(repository port.TableRepository) port.TableService {
 	}
 }
 
-func (srv *tableService) Create(ctx context.Context, table domain.Table) error {
-	err := srv.repository.Create(ctx, table)
+func (srv *tableService) Create(ctx context.Context, table *domain.Table) (*domain.Table, error) {
+	t, err := srv.repository.Create(ctx, table)
 	if err != nil {
-		return fmt.Errorf("create table: %w", err)
+		return nil, fmt.Errorf("create table: %w", err)
 	}
 
-	return nil
+	return t, nil
 }
 
 func (srv *tableService) Delete(ctx context.Context, id int64) error {
@@ -35,8 +35,8 @@ func (srv *tableService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (srv *tableService) GetAll(ctx context.Context) ([]*domain.Table, error) {
-	tables, err := srv.repository.GetAll(ctx)
+func (srv *tableService) GetEmptySeats(ctx context.Context) ([]*domain.Table, error) {
+	tables, err := srv.repository.GetEmptySeats(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get all tables: %w", err)
 	}
