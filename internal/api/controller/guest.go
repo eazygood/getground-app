@@ -33,7 +33,7 @@ func createFromCreateUpdateRequest(req GuestRequest) (*domain.Guest, error) {
 	}
 
 	if req.TimeArrived != "" {
-		t, err := toTimePtr(req.TimeArrived)
+		t, err := strToTimePtr(req.TimeArrived)
 		if err != nil {
 
 			return nil, fmt.Errorf("invalid time arrived input")
@@ -156,7 +156,13 @@ func (c *guestController) GetList(request *gin.Context) {
 	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
 	defer cancel()
 
-	guests, err := c.guestService.GetList(requestCtx)
+	filters := port.GetGuestFilter{}
+
+	if _, ok := request.GetQuery("arrived"); ok {
+		filters.TimeArrived = true
+	}
+
+	guests, err := c.guestService.GetList(requestCtx, filters)
 	if err != nil {
 		logAndAbort(request, errors.NewApiError(errors.Internal, err))
 		return

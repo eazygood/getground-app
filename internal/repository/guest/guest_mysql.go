@@ -81,9 +81,16 @@ func (m *MysqlGuestAdapter) Update(ctx context.Context, id int64, guest *domain.
 	return nil
 }
 
-func (m *MysqlGuestAdapter) GetAll(ctx context.Context) ([]*domain.Guest, error) {
+func (m *MysqlGuestAdapter) GetAll(ctx context.Context, filter port.GetGuestFilter) ([]*domain.Guest, error) {
 	var guests []*domain.Guest
-	err := m.Conn.Find(&guests).Error
+
+	conn := m.Conn
+
+	if filter.TimeArrived {
+		conn = conn.Where("time_arrived IS NOT NULL")
+	}
+
+	err := conn.Find(&guests).Error
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get list of guests: %v", err.Error())

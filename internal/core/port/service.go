@@ -11,12 +11,12 @@ type GuestService interface {
 	Update(ctx context.Context, id int64, u *domain.Guest) error
 	Delete(ctx context.Context, id int64) error
 	GetById(ctx context.Context, id int64) (*domain.Guest, error)
-	GetList(ctx context.Context) ([]*domain.Guest, error)
+	GetList(ctx context.Context, filter GetGuestFilter) ([]*domain.Guest, error)
 }
 
 type GuestListService interface {
-	GetAll(ctx context.Context) ([]domain.GuestList, error)
-	Create(ctx context.Context, guest domain.Guest, table domain.Table) error
+	FindAvailableTable(ctx context.Context, filter GetGuestListFilter) (*domain.Table, error)
+	GetOccupiedSeats(ctx context.Context) ([]*domain.Table, error)
 }
 
 type TableService interface {

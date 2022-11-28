@@ -18,7 +18,10 @@ type TableController interface {
 	Delete(request *gin.Context)
 }
 
-type TableRequest struct {
+type TableCreateRequest struct {
+	Seats uint16 `json:"seats"`
+}
+type TableUpdateeRequest struct {
 	Seats   uint16 `json:"seats"`
 	GuestID int64  `json:"guest_id"`
 }
@@ -36,8 +39,7 @@ func NewTableController(tableService port.TableService, guestService port.GuestS
 }
 
 func (t *tableController) Create(request *gin.Context) {
-	// body := &TableRequest{}
-	body := &domain.Table{}
+	body := &TableCreateRequest{}
 	if err := request.ShouldBindJSON(body); err != nil {
 		logAndAbort(request, errors.NewApiError(errors.InvalidInput, err))
 		return
@@ -46,21 +48,10 @@ func (t *tableController) Create(request *gin.Context) {
 	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
 	defer cancel()
 
-	// tbl := domain.Table{}
-	// tbl.Seats = body.Seats
+	table, err := t.tableService.Create(requestCtx, &domain.Table{
+		Seats: body.Seats,
+	})
 
-	// if body.GuestID != 0 {
-	// 	g, err := t.guestService.GetById(requestCtx, body.GuestID)
-
-	// 	if err != nil {
-	// 		logAndAbort(request, errors.NewApiError(errors.Internal, err))
-	// 		return
-	// 	}
-
-	// 	tbl.Guest = g
-	// }
-
-	table, err := t.tableService.Create(requestCtx, body)
 	if err != nil {
 		logAndAbort(request, errors.NewApiError(errors.Internal, err))
 		return
@@ -77,7 +68,7 @@ func (t *tableController) Update(request *gin.Context) {
 		return
 	}
 
-	body := TableRequest{}
+	body := TableUpdateeRequest{}
 	if err := request.ShouldBind(&body); err != nil {
 		logAndAbort(request, errors.NewApiError(errors.InvalidInput, err))
 		return
@@ -88,20 +79,33 @@ func (t *tableController) Update(request *gin.Context) {
 
 	tbl := domain.Table{}
 	tbl.Seats = body.Seats
+	tbl.GuestID = &body.GuestID
 
-	// check is table already has guest_id, if not return error
-	// check guest_id if exist, if not return error
+	if body.GuestID != 0 {
+		table, err := t.tableService.GetById(requestCtx, int64(id))
 
-	// if body.GuestID != 0 {
-	// 	g, err := t.guestService.GetById(requestCtx, body.GuestID)
+		if err != nil {
+			logAndAbort(request, errors.NewApiError(errors.Internal, err))
+			return
+		}
 
-	// 	if err != nil {
-	// 		logAndAbort(request, errors.NewApiError(errors.Internal, err))
-	// 		return
-	// 	}
+		if table.GuestID != nil {
+			logAndAbort(request, errors.NewApiError(errors.Internal, err))
+			return
+		}
 
-	// 	tbl.Guest = g
-	// }
+		g, err := t.guestService.GetById(requestCtx, body.GuestID)
+
+		if err != nil {
+			logAndAbort(request, errors.NewApiError(errors.Internal, err))
+			return
+		}
+
+		if g.AccompanyingGuests > table.Seats {
+			logAndAbort(request, errors.NewApiError(errors.Internal, err))
+			return
+		}
+	}
 
 	err = t.tableService.Update(requestCtx, int64(id), tbl)
 	if err != nil {

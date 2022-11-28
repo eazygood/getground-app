@@ -4,10 +4,11 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	"github.com/eazygood/getground-app/internal/config"
 	"github.com/go-sql-driver/mysql"
-	logger "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	gormMySql "gorm.io/driver/mysql"
 )
 
@@ -16,7 +17,6 @@ var (
 )
 
 func InitDb(cfg *config.App) *gorm.DB {
-	logger.Info(cfg.Database.Name, cfg.Database.Password, cfg.Database.User, cfg.Database.Host, cfg.Database.Port)
 	dbConfig := mysql.Config{
 		User:                 cfg.Database.User,
 		Passwd:               cfg.Database.Password,
@@ -32,12 +32,12 @@ func InitDb(cfg *config.App) *gorm.DB {
 		DSN: dbConfig.FormatDSN(),
 	}
 
-	logger.Info(dbConfig.FormatDSN())
-
-	initDB, err := gorm.Open(gormMySql.New(config), &gorm.Config{})
+	initDB, err := gorm.Open(gormMySql.New(config), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 
 	if err != nil {
-		logger.Panicf("failed to init database: %v\n", err)
+		log.Panicf("failed to init database: %v\n", err)
 	}
 
 	db = initDB

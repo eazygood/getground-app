@@ -29,7 +29,7 @@ func logAndAbort(request *gin.Context, err errors.ApiError) {
 	request.AbortWithStatusJSON(err.Code, err)
 }
 
-func toTimePtr(dateValue string) (*time.Time, error) {
+func strToTimePtr(dateValue string) (*time.Time, error) {
 	for _, layout := range customTimeLayoutList {
 		if t, err := time.Parse(layout, dateValue); err == nil {
 			return &t, nil
@@ -37,4 +37,8 @@ func toTimePtr(dateValue string) (*time.Time, error) {
 	}
 
 	return nil, fmt.Errorf("unable to find proper date")
+}
+
+func toTimePtr(t time.Time) *time.Time {
+	return &t
 }

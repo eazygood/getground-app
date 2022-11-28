@@ -6,6 +6,7 @@ import (
 	"github.com/eazygood/getground-app/internal/core/service"
 	mysql "github.com/eazygood/getground-app/internal/infrastructure/db"
 	"github.com/eazygood/getground-app/internal/repository/guest"
+	"github.com/eazygood/getground-app/internal/repository/guestlist"
 	"github.com/eazygood/getground-app/internal/repository/table"
 )
 
@@ -18,16 +19,21 @@ type Dependecy struct {
 func initDependencies(cfg *config.App) (*Dependecy, error) {
 	// db connection
 	db := mysql.InitDb(cfg)
+
 	// repositories
 	guestRepository := guest.NewMysqlGuestAdapter(db)
 	tableRepository := table.NewMysqlTableAdapter(db)
+	guestListRepository := guestlist.NewMysqlGuestListAdapter(db)
+
 	// services
 	guestService := service.NewGuestService(guestRepository)
 	tableService := service.NewTableListService(tableRepository)
-	// contollers
+	guestListService := service.NewGuestListService(guestListRepository)
+
+	// controllers
 	guestController := controller.NewGuestController(guestService)
 	tableController := controller.NewTableController(tableService, guestService)
-	guestLisController := controller.NewGuestListController(guestService, tableService)
+	guestLisController := controller.NewGuestListController(guestService, tableService, guestListService)
 
 	return &Dependecy{
 		guestController:     guestController,
