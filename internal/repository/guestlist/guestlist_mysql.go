@@ -44,10 +44,8 @@ func (m *MysqlGuestListAdapter) GetOccupiedSeats(ctx context.Context) ([]*domain
 
 	err := m.Conn.Debug().Preload("Guest").Joins("JOIN guests ON guests.id = guest_id").Where("guest_id IS NOT NULL").Find(&tables).Error
 
-	// err := m.Conn.Debug().Joins("JOIN guests ON guests.id = guest_id").Where("guest_id IS NOT NULL").Find(guestList).Error
-
 	if err != nil {
-		return nil, fmt.Errorf("failed to get list of tables: %v", err.Error())
+		return nil, fmt.Errorf("failed to get list of occupied seats: %v", err.Error())
 	}
 
 	return tables, nil

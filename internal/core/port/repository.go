@@ -10,6 +10,7 @@ type GetGuestFilter struct {
 	TimeArrived bool `json:"time_arrived"`
 }
 
+//go:generate mockgen -source repository.go -destination=../../../mocks/core/port/repository_mock.go -package ports
 type GuestRepository interface {
 	GetById(ctx context.Context, id int64) (*domain.Guest, error)
 	GetAll(ctx context.Context, filter GetGuestFilter) ([]*domain.Guest, error)

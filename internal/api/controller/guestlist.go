@@ -74,7 +74,7 @@ func (g *guestListController) Create(request *gin.Context) {
 	}
 
 	if guest.TimeArrived != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, fmt.Errorf("guest already has seats")))
+		logAndAbort(request, errors.NewApiError(errors.NotFound, fmt.Errorf("guest already has seats")))
 		return
 	}
 
