@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `database`.`guests` (
 	`name` VARCHAR(255),
 	`accompanying_guests` SMALLINT,
 	`time_arrived` TIMESTAMP NULL DEFAULT NULL,
+	`is_arrived` BOOLEAN DEFAULT false,
 	PRIMARY KEY (`id`)
 ) ENGINE InnoDB DEFAULT CHARSET = `utf8`;
 

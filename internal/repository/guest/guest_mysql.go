@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/eazygood/getground-app/internal/core/domain"
 	"github.com/eazygood/getground-app/internal/core/port"
@@ -72,6 +73,10 @@ func (m *MysqlGuestAdapter) GetById(ctx context.Context, id int64) (*domain.Gues
 }
 
 func (m *MysqlGuestAdapter) Update(ctx context.Context, id int64, guest *domain.Guest) error {
+	if guest.IsArrived {
+		t := time.Now()
+		guest.TimeArrived = &t
+	}
 	err := m.Conn.Model(&domain.Guest{}).Where("id = ?", id).Updates(guest).Error
 
 	if err != nil {

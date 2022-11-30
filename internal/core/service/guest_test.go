@@ -8,7 +8,6 @@ import (
 	"github.com/eazygood/getground-app/internal/core/domain"
 	"github.com/eazygood/getground-app/internal/core/port"
 	mockPort "github.com/eazygood/getground-app/mocks/core/port"
-	ports "github.com/eazygood/getground-app/mocks/core/port"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -19,7 +18,7 @@ type GuestServiceSuite struct {
 	suite.Suite
 	*require.Assertions
 	ctrl                *gomock.Controller
-	mockGuestRepository *ports.MockGuestRepository
+	mockGuestRepository *mockPort.MockGuestRepository
 	guestService        port.GuestService
 }
 

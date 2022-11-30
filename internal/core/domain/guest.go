@@ -7,4 +7,5 @@ type Guest struct {
 	Name               string     `json:"name" db:"name"`
 	AccompanyingGuests uint16     `json:"accompanying_guests" db:"accompanying_guests"`
 	TimeArrived        *time.Time `json:"time_arrived" db:"time_arrived"`
+	IsArrived          bool       `json:"is_arrived" db:"is_arrived"`
 }

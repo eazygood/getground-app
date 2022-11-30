@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -68,10 +67,7 @@ func (c *guestController) Create(request *gin.Context) {
 		return
 	}
 
-	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
-	defer cancel()
-
-	guest, err := c.guestService.Create(requestCtx, g)
+	guest, err := c.guestService.Create(request, g)
 	if err != nil {
 		logAndAbort(request, errors.NewApiError(errors.Internal, err))
 		return
@@ -80,93 +76,81 @@ func (c *guestController) Create(request *gin.Context) {
 	request.JSON(http.StatusCreated, guest)
 }
 
-func (c *guestController) Update(request *gin.Context) {
-	id, err := strconv.Atoi(request.Param("guest_id"))
+func (c *guestController) Update(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("guest_id"))
 
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
 	body := GuestRequest{}
-	if err := request.ShouldBindJSON(&body); err != nil {
-		logAndAbort(request, errors.NewApiError(errors.InvalidInput, err))
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		logAndAbort(ctx, errors.NewApiError(errors.InvalidInput, err))
 		return
 	}
 
 	g, err := createFromCreateUpdateRequest(body)
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.InvalidInput, err))
+		logAndAbort(ctx, errors.NewApiError(errors.InvalidInput, err))
 		return
 	}
 
-	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
-	defer cancel()
-
-	err = c.guestService.Update(requestCtx, int64(id), g)
+	err = c.guestService.Update(ctx, int64(id), g)
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	request.JSON(http.StatusOK, gin.H{"message": "success"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
-func (c *guestController) Delete(request *gin.Context) {
-	id, err := strconv.Atoi(request.Param("guest_id"))
+func (c *guestController) Delete(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("guest_id"))
 
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
-	defer cancel()
-
-	err = c.guestService.Delete(requestCtx, int64(id))
+	err = c.guestService.Delete(ctx, int64(id))
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	request.JSON(http.StatusOK, gin.H{"message": "success"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
-func (c *guestController) GetById(request *gin.Context) {
-	id, err := strconv.Atoi(request.Param("guest_id"))
+func (c *guestController) GetById(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("guest_id"))
 
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
-	defer cancel()
-
-	guest, err := c.guestService.GetById(requestCtx, int64(id))
+	guest, err := c.guestService.GetById(ctx, int64(id))
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	request.JSON(http.StatusOK, guest)
+	ctx.JSON(http.StatusOK, guest)
 }
 
-func (c *guestController) GetList(request *gin.Context) {
-	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
-	defer cancel()
-
+func (c *guestController) GetList(ctx *gin.Context) {
 	filters := port.GetGuestFilter{}
 
-	if _, ok := request.GetQuery("arrived"); ok {
+	if _, ok := ctx.GetQuery("arrived"); ok {
 		filters.TimeArrived = true
 	}
 
-	guests, err := c.guestService.GetList(requestCtx, filters)
+	guests, err := c.guestService.GetList(ctx, filters)
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	request.JSON(http.StatusOK, guests)
+	ctx.JSON(http.StatusOK, guests)
 }

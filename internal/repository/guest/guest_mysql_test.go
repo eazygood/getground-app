@@ -66,8 +66,8 @@ func (g *GuestMysqlRepositorySuite) TestCreateGuest() {
 	rows := sqlmock.NewRows([]string{"id", "name", "accompanying_guests", "time_arrived"}).AddRow(1, "Tere", 0, nil)
 	g.mock.ExpectBegin()
 
-	g.mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `guests` (`name`,`accompanying_guests`,`time_arrived`) VALUES (?,?,?)")).
-		WithArgs("Tere", sqlmock.AnyArg(), sqlmock.AnyArg()).
+	g.mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `guests` (`name`,`accompanying_guests`,`time_arrived`,`is_arrived`) VALUES (?,?,?,?)")).
+		WithArgs("Tere", sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	g.mock.ExpectCommit()
@@ -86,6 +86,7 @@ func (g *GuestMysqlRepositorySuite) TestUpdateGuest() {
 		Name:               "Tere",
 		AccompanyingGuests: 10,
 		TimeArrived:        nil,
+		IsArrived:          false,
 	}
 
 	g.mock.ExpectBegin()

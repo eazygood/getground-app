@@ -24,7 +24,7 @@ type TableServiceSuite struct {
 }
 
 func TestTableServiceSuite(t *testing.T) {
-	suite.Run(t, new(GuestServiceSuite))
+	suite.Run(t, new(TableServiceSuite))
 }
 
 func (g *TableServiceSuite) SetupTest() {

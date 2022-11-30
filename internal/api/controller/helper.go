@@ -10,7 +10,6 @@ import (
 )
 
 var (
-	requestTimeout       = time.Second * 30
 	customTimeLayoutList = []string{
 		"Mon, 2 Jan 2006 15:04:05 -0700",
 		"Mon, 2 Jan 2006 15:04:05 -0700 (MST)",
@@ -37,8 +36,4 @@ func strToTimePtr(dateValue string) (*time.Time, error) {
 	}
 
 	return nil, fmt.Errorf("unable to find proper date")
-}
-
-func toTimePtr(t time.Time) *time.Time {
-	return &t
 }

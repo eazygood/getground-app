@@ -1,11 +1,9 @@
 package controller
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/eazygood/getground-app/internal/core/domain"
 	"github.com/eazygood/getground-app/internal/core/port"
@@ -37,17 +35,17 @@ func NewGuestListController(guest port.GuestService, table port.TableService, gu
 	}
 }
 
-func (g *guestListController) Create(request *gin.Context) {
-	id, err := strconv.Atoi(request.Param("guest_id"))
+func (g *guestListController) Create(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("guest_id"))
 
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
 	body := &GuestListRequest{}
-	if err := request.ShouldBindJSON(&body); err != nil {
-		logAndAbort(request, errors.NewApiError(errors.InvalidInput, err))
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		logAndAbort(ctx, errors.NewApiError(errors.InvalidInput, err))
 		return
 	}
 
@@ -55,62 +53,56 @@ func (g *guestListController) Create(request *gin.Context) {
 		AccompanyingGuests: uint16(body.AccompanyingGuests),
 	}
 
-	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
-	defer cancel()
-
-	table, err := g.guestListService.FindAvailableTable(requestCtx, filter)
+	table, err := g.guestListService.FindAvailableTable(ctx, filter)
 
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
 	// get guest if it is registered(invited)
-	guest, err := g.guestService.GetById(requestCtx, int64(id))
+	guest, err := g.guestService.GetById(ctx, int64(id))
 
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	if guest.TimeArrived != nil {
-		logAndAbort(request, errors.NewApiError(errors.NotFound, fmt.Errorf("guest already has seats")))
+	if guest.IsArrived {
+		logAndAbort(ctx, errors.NewApiError(errors.NotFound, fmt.Errorf("guest already has seats")))
 		return
 	}
 
 	// update guest with accompanying guest
-	err = g.guestService.Update(requestCtx, guest.ID, &domain.Guest{
+	err = g.guestService.Update(ctx, guest.ID, &domain.Guest{
 		AccompanyingGuests: uint16(body.AccompanyingGuests),
-		TimeArrived:        toTimePtr(time.Now()),
+		IsArrived:          true,
 	})
 
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
 	// update table with guest
-	err = g.tableService.Update(requestCtx, table.ID, domain.Table{
+	err = g.tableService.Update(ctx, table.ID, domain.Table{
 		GuestID: &guest.ID,
 	})
 
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	request.JSON(http.StatusOK, gin.H{"message": "success"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
-func (g *guestListController) GetList(request *gin.Context) {
-	requestCtx, cancel := context.WithTimeout(request, requestTimeout)
-	defer cancel()
-
-	guestList, err := g.guestListService.GetOccupiedSeats(requestCtx)
+func (g *guestListController) GetList(ctx *gin.Context) {
+	guestList, err := g.guestListService.GetOccupiedSeats(ctx)
 	if err != nil {
-		logAndAbort(request, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
 		return
 	}
 
-	request.JSON(http.StatusOK, guestList)
+	ctx.JSON(http.StatusOK, guestList)
 }
