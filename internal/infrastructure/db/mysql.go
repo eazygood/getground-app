@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 
 	"github.com/eazygood/getground-app/internal/config"
 	"github.com/go-sql-driver/mysql"
@@ -33,7 +32,7 @@ func InitDb(cfg *config.App) *gorm.DB {
 	}
 
 	initDB, err := gorm.Open(gormMySql.New(config), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		// Logger: logger.Default.LogMode(logger.Info),
 	})
 
 	if err != nil {

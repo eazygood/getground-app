@@ -23,7 +23,7 @@ func NewMysqlGuestListAdapter(Conn *gorm.DB) port.GuesListRepository {
 func (m *MysqlGuestListAdapter) FindAvailableTable(ctx context.Context, filter port.GetGuestListFilter) (*domain.Table, error) {
 	table := domain.Table{}
 
-	result := m.Conn.Debug().Where("seats >= ? AND guest_id IS NULL", filter.AccompanyingGuests).Find(&table)
+	result := m.Conn.Where("seats >= ? AND guest_id IS NULL", filter.AccompanyingGuests).Find(&table)
 
 	err := result.Error
 	rows := result.RowsAffected
@@ -42,7 +42,7 @@ func (m *MysqlGuestListAdapter) FindAvailableTable(ctx context.Context, filter p
 func (m *MysqlGuestListAdapter) GetOccupiedSeats(ctx context.Context) ([]*domain.Table, error) {
 	var tables []*domain.Table
 
-	err := m.Conn.Debug().Preload("Guest").Joins("JOIN guests ON guests.id = guest_id").Where("guest_id IS NOT NULL").Find(&tables).Error
+	err := m.Conn.Preload("Guest").Joins("JOIN guests ON guests.id = guest_id").Where("guest_id IS NOT NULL").Find(&tables).Error
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get list of occupied seats: %v", err.Error())

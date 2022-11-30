@@ -40,6 +40,7 @@ func (g *GuestServiceSuite) TearDownTest() {
 }
 
 func (g *GuestServiceSuite) TestCreateGuest() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	request := &domain.Guest{
@@ -60,6 +61,7 @@ func (g *GuestServiceSuite) TestCreateGuest() {
 }
 
 func (g *GuestServiceSuite) TestCreateGuestThrowError() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	request := &domain.Guest{
@@ -81,6 +83,7 @@ func (g *GuestServiceSuite) TestCreateGuestThrowError() {
 }
 
 func (g *GuestServiceSuite) TestGuestDelete() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	g.mockGuestRepository.EXPECT().Delete(c, int64(1)).Return(nil).Times(1)
@@ -90,6 +93,7 @@ func (g *GuestServiceSuite) TestGuestDelete() {
 }
 
 func (g *GuestServiceSuite) TestGuestGetById() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	guest := &domain.Guest{
@@ -107,6 +111,7 @@ func (g *GuestServiceSuite) TestGuestGetById() {
 }
 
 func (g *GuestServiceSuite) TestGuestGetByIdThrowError() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	guest := &domain.Guest{
@@ -123,6 +128,7 @@ func (g *GuestServiceSuite) TestGuestGetByIdThrowError() {
 }
 
 func (g *GuestServiceSuite) TestGuestGetList() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	guests := []*domain.Guest{
@@ -142,6 +148,7 @@ func (g *GuestServiceSuite) TestGuestGetList() {
 }
 
 func (g *GuestServiceSuite) TestGuestGetListThrowError() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	guests := []*domain.Guest{
@@ -161,6 +168,7 @@ func (g *GuestServiceSuite) TestGuestGetListThrowError() {
 }
 
 func (g *GuestServiceSuite) TestGuestUpdate() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	guest := &domain.Guest{

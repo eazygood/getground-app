@@ -42,6 +42,7 @@ func (g *GuestListServiceSuite) TearDownTest() {
 }
 
 func (g *GuestListServiceSuite) TestGuestListFindAvailableTable() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	table := &domain.Table{
@@ -57,6 +58,7 @@ func (g *GuestListServiceSuite) TestGuestListFindAvailableTable() {
 }
 
 func (g *GuestListServiceSuite) TestGuestListFindAvailableTableThrowError() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	err := errors.New("Mock Repository Error")
@@ -68,6 +70,7 @@ func (g *GuestListServiceSuite) TestGuestListFindAvailableTableThrowError() {
 }
 
 func (g *GuestListServiceSuite) TestGuestListGetOccupiedSeats() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	t := time.Now().UTC()
@@ -106,6 +109,7 @@ func (g *GuestListServiceSuite) TestGuestListGetOccupiedSeats() {
 }
 
 func (g *GuestListServiceSuite) TestGuestListGetOccupiedSeatsThrowError() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	err := errors.New("Mock Repository Error")

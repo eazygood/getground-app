@@ -48,7 +48,7 @@ generate: installmockgen
 .PHONY: test
 test:
 	@echo "Running tests..."
-	@CGO_ENABLED=1 go test -race -tags=unit ./...
+	@CGO_ENABLED=1 go test -race -tags=unit -v ./...
 
 .PHONY: tidy
 ## tidy: tidy dependencies

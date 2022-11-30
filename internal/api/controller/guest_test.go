@@ -25,10 +25,6 @@ type GuestControllereSuite struct {
 	guestController  GuestController
 }
 
-type HttpJsonResponse struct {
-	Message string
-}
-
 func TestGuestControllereSuite(t *testing.T) {
 	suite.Run(t, new(GuestControllereSuite))
 }

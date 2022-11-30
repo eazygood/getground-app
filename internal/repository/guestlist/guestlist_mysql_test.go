@@ -110,11 +110,11 @@ func (g *GuestListMysqlRepositorySuite) TestFindAvailableTableNotFound() {
 	c, cancel := context.WithTimeout(context.Background(), time.Duration(1000))
 	defer cancel()
 
-	rows := sqlmock.NewRows([]string{"id", "seats", "guest_id"}).AddRow(1, 15, nil)
+	rows := sqlmock.NewRows([]string{"id", "seats", "guest_id"})
 
-	g.mock.ExpectQuery("^SELECT (.+) FROM `tables` WHERE (.+)").WithArgs(1).WillReturnRows(rows)
+	g.mock.ExpectQuery("^SELECT (.+) FROM `tables` WHERE (.+)").WillReturnRows(rows)
 
 	_, err := g.mySqlGuestList.FindAvailableTable(c, port.GetGuestListFilter{})
 
-	require.ErrorContains(g.T(), err, "no available seats")
+	g.ErrorContains(err, "no available seats")
 }

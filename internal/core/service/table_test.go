@@ -41,6 +41,7 @@ func (g *TableServiceSuite) TearDownTest() {
 }
 
 func (g *TableServiceSuite) TestCreateTable() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	request := &domain.Table{
@@ -58,6 +59,7 @@ func (g *TableServiceSuite) TestCreateTable() {
 }
 
 func (g *TableServiceSuite) TestCreateTableThrowError() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	request := &domain.Table{
@@ -77,6 +79,7 @@ func (g *TableServiceSuite) TestCreateTableThrowError() {
 }
 
 func (t *TableServiceSuite) TestTableDelete() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	t.mockTableRepository.EXPECT().Delete(c, int64(1)).Return(nil).Times(1)
@@ -86,6 +89,7 @@ func (t *TableServiceSuite) TestTableDelete() {
 }
 
 func (t *TableServiceSuite) TestTableGetById() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	table := &domain.Table{
@@ -101,6 +105,7 @@ func (t *TableServiceSuite) TestTableGetById() {
 }
 
 func (t *TableServiceSuite) TestTableGetEmptySeats() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	tables := []*domain.Table{
@@ -121,6 +126,7 @@ func (t *TableServiceSuite) TestTableGetEmptySeats() {
 }
 
 func (t *TableServiceSuite) TestGuestUpdate() {
+	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
 	table := domain.Table{
