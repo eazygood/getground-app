@@ -12,7 +12,7 @@ type TableService struct {
 	repository port.TableRepository
 }
 
-func NewTableListService(repository port.TableRepository) port.TableService {
+func NewTableService(repository port.TableRepository) port.TableService {
 	return &TableService{
 		repository: repository,
 	}
@@ -45,12 +45,12 @@ func (srv *TableService) GetEmptySeats(ctx context.Context) ([]*domain.Table, er
 }
 
 func (srv *TableService) GetById(ctx context.Context, id int64) (*domain.Table, error) {
-	guest, err := srv.repository.GetById(ctx, id)
+	table, err := srv.repository.GetById(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get table: %w", err)
 	}
 
-	return guest, nil
+	return table, nil
 }
 
 func (srv *TableService) Update(ctx context.Context, id int64, table domain.Table) error {

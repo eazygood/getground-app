@@ -27,7 +27,7 @@ func initDependencies(cfg *config.App) (*Dependecy, error) {
 
 	// services
 	guestService := service.NewGuestService(guestRepository)
-	tableService := service.NewTableListService(tableRepository)
+	tableService := service.NewTableService(tableRepository)
 	guestListService := service.NewGuestListService(guestListRepository)
 
 	// controllers

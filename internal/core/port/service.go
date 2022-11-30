@@ -6,6 +6,7 @@ import (
 	"github.com/eazygood/getground-app/internal/core/domain"
 )
 
+//go:generate mockgen -source service.go -destination=../../../mocks/core/port/service_mock.go -package ports
 type GuestService interface {
 	Create(ctx context.Context, g *domain.Guest) (*domain.Guest, error)
 	Update(ctx context.Context, id int64, u *domain.Guest) error
