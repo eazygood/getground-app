@@ -119,7 +119,7 @@ func (g *GuestMysqlRepositorySuite) TestDeleteGuest() {
 	g.NoError(err)
 }
 
-func (g *GuestMysqlRepositorySuite) TestGetListUser() {
+func (g *GuestMysqlRepositorySuite) TestGetListGuest() {
 	c, cancel := context.WithTimeout(context.Background(), time.Duration(1000))
 	defer cancel()
 
@@ -148,7 +148,7 @@ func (g *GuestMysqlRepositorySuite) TestGetListUser() {
 	g.EqualValues(expected, guests)
 }
 
-func (g *GuestMysqlRepositorySuite) TestGetListWithOutFilterUser() {
+func (g *GuestMysqlRepositorySuite) TestGetListWithOutFilterGuest() {
 	c, cancel := context.WithTimeout(context.Background(), time.Duration(1000))
 	defer cancel()
 

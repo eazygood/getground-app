@@ -5,6 +5,11 @@ Feel free to refactor but provide us with good instructions to start the applica
 make
 ```
 
+URL to test:
+```
+http://localhost:8081/health
+```
+
  `docker/mysql/dump.sql` has initializion of the mysql database
 
 

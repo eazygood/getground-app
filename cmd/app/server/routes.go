@@ -6,7 +6,7 @@ func initRoutes(router *gin.Engine, dependency *Dependecy) {
 	router.POST("/guests", dependency.guestController.Create)
 	router.PUT("/guests/:guest_id", dependency.guestController.Update)
 	router.GET("/guests/:guest_id", dependency.guestController.GetById)
-	router.GET("/guests/list", dependency.guestController.GetList)
+	router.GET("/guests", dependency.guestController.GetList)
 	router.DELETE("/guests/:guest_id", dependency.guestController.Delete)
 
 	router.POST("/guestlist", dependency.guestListController.Create)
