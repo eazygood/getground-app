@@ -113,7 +113,7 @@ func (t *TableMysqlRepositorySuite) TestGetEmptySeats() {
 
 	rows := sqlmock.NewRows([]string{"count"}).AddRow(15)
 
-	t.mock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(`seats`) FROM `tables` WHERE guest_id IS NULL")).WillReturnRows(rows)
+	t.mock.ExpectQuery(regexp.QuoteMeta("SELECT sum(seats) as count FROM `tables` WHERE guest_id IS NULL")).WillReturnRows(rows)
 
 	actual, err := t.mySqlTableAdapter.GetEmptySeats(c)
 
