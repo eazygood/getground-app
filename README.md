@@ -47,29 +47,28 @@ This is a directional API guide.
 If there is insufficient space at the specified table, then an error should be thrown.
 
 ```
-POST /guest_list/:guest_id
+POST /guestlist/:guest_id
 body: 
 {
-    "table": int,
     "accompanying_guests": int
 }
 response: 
 {
-    "name": "string"
+    "guest_id": int
 }
 ```
 
 ### Get the guest list
 
 ```
-GET /guest_list
+GET /guestlist
 response: 
 {
     "guests": [
         {
-            "name": "string",
-            "table": int,
-            "accompanying_guests": int
+            "table_id": int,
+            "seats" int
+            "guest_id": "string",
         }, ...
     ]
 }
@@ -81,14 +80,19 @@ A guest may arrive with an entourage that is not the size indicated at the guest
 If the table is expected to have space for the extras, allow them to come. Otherwise, this method should throw an error.
 
 ```
-POST /guests/:guest_id
+POST /guests
 body:
 {
+    "name": string
     "accompanying_guests": int
 }
 response:
 {
-    "name": "string"
+    "id": int
+    "name": string
+    "accompanying_guests": int,
+    "time_arrived": date,
+    "is_arrived": boolean
 }
 ```
 
@@ -98,9 +102,16 @@ When a guest leaves, all their accompanying guests leave as well.
 
 ```
 DELETE /guests/:guest_id
+
+response:
+{
+    "message": string
+}
 ```
 
 ### Get arrived guests
+
+You can provide filter with query parameter `?arrived` to filter out only arrived guests
 
 ```
 GET /guests
@@ -108,9 +119,11 @@ response:
 {
     "guests": [
         {
-            "name": "string",
+            "id": int,
+            "name": string,
             "accompanying_guests": int,
-            "time_arrived": "string"
+            "time_arrived": string,
+            "is_arrived": boolean
         }
     ]
 }

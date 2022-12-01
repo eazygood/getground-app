@@ -91,8 +91,8 @@ func (m *MysqlGuestAdapter) GetAll(ctx context.Context, filter port.GetGuestFilt
 
 	conn := m.Conn
 
-	if filter.TimeArrived {
-		conn = conn.Where("time_arrived IS NOT NULL")
+	if filter.IsArrived {
+		conn = conn.Where("is_arrived IS true")
 	}
 
 	err := conn.Find(&guests).Error

@@ -9,7 +9,7 @@ func initRoutes(router *gin.Engine, dependency *Dependecy) {
 	router.GET("/guests/list", dependency.guestController.GetList)
 	router.DELETE("/guests/:guest_id", dependency.guestController.Delete)
 
-	router.POST("/guestlist/:guest_id", dependency.guestListController.Create)
+	router.POST("/guestlist", dependency.guestListController.Create)
 	router.GET("/guestlist", dependency.guestListController.GetList)
 
 	router.POST("/tables/", dependency.tableController.Create)

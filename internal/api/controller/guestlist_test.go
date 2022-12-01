@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -50,9 +51,8 @@ func (g *GuestListControllereSuite) TestCreateGuestList() {
 	w := httptest.NewRecorder()
 	c := testutil.GetTestGinContext(w)
 
-	c.AddParam("guest_id", "1")
-
 	body := GuestListRequest{
+		GuestID:            1,
 		AccompanyingGuests: 5,
 	}
 
@@ -87,6 +87,81 @@ func (g *GuestListControllereSuite) TestCreateGuestList() {
 	g.EqualValues(http.StatusOK, w.Code)
 
 	wantJson := `{"message":"success"}`
+	got, _ := io.ReadAll(res.Body)
+
+	g.Equal(wantJson, string(got))
+}
+
+func (g *GuestListControllereSuite) TestCreateGuestListThrowErrorNoAvailableSeats() {
+	w := httptest.NewRecorder()
+	c := testutil.GetTestGinContext(w)
+
+	body := GuestListRequest{
+		GuestID:            1,
+		AccompanyingGuests: 1000,
+	}
+
+	filter := port.GetGuestListFilter{
+		AccompanyingGuests: uint16(body.AccompanyingGuests),
+	}
+
+	testutil.MockJsonPost(c, body)
+
+	apiError := errors.New("no available seats")
+
+	g.mockGuestListService.EXPECT().FindAvailableTable(c, gomock.Eq(filter)).Return(nil, apiError).Times(1)
+
+	g.guestListController.Create(c)
+
+	res := w.Result()
+	defer res.Body.Close()
+
+	g.EqualValues(http.StatusNotFound, w.Code)
+
+	wantJson := `{"code":404,"message":"no available seats"}`
+	got, _ := io.ReadAll(res.Body)
+
+	g.Equal(wantJson, string(got))
+}
+
+func (g *GuestListControllereSuite) TestCreateGuestListGuestAlreadHasTable() {
+	w := httptest.NewRecorder()
+	c := testutil.GetTestGinContext(w)
+
+	body := GuestListRequest{
+		GuestID:            1,
+		AccompanyingGuests: 5,
+	}
+
+	filter := port.GetGuestListFilter{
+		AccompanyingGuests: uint16(body.AccompanyingGuests),
+	}
+
+	testutil.MockJsonPost(c, body)
+
+	guest := domain.Guest{
+		ID:                 1,
+		Name:               "Simon",
+		AccompanyingGuests: 0,
+		IsArrived:          true,
+	}
+
+	availableTable := domain.Table{
+		ID:    2,
+		Seats: 10,
+	}
+
+	g.mockGuestListService.EXPECT().FindAvailableTable(c, gomock.Eq(filter)).Return(&availableTable, nil).Times(1)
+	g.mockGuestService.EXPECT().GetById(c, guest.ID).Return(&guest, nil).Times(1)
+
+	g.guestListController.Create(c)
+
+	res := w.Result()
+	defer res.Body.Close()
+
+	g.EqualValues(http.StatusBadRequest, w.Code)
+
+	wantJson := `{"code":400,"message":"guest already has seats"}`
 	got, _ := io.ReadAll(res.Body)
 
 	g.Equal(wantJson, string(got))

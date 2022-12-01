@@ -31,7 +31,6 @@ func TestTabletControllereSuite(t *testing.T) {
 
 func (g *TableControllereSuite) SetupTest() {
 	g.Assertions = require.New(g.T())
-
 	g.ctrl = gomock.NewController(g.T())
 	g.mockTableService = mockPort.NewMockTableService(g.ctrl)
 	g.mockGuestService = mockPort.NewMockGuestService(g.ctrl)
@@ -244,18 +243,7 @@ func (g *TableControllereSuite) TestGetEmptySeatsTable() {
 
 	testutil.MockJsonGet(c, []gin.Param{}, url.Values{})
 
-	emptySeats := []*domain.Table{
-		{
-			ID:    1,
-			Seats: 10,
-		},
-		{
-			ID:    2,
-			Seats: 10,
-		},
-	}
-
-	g.mockTableService.EXPECT().GetEmptySeats(c).Return(emptySeats, nil)
+	g.mockTableService.EXPECT().GetEmptySeats(c).Return(int64(17), nil)
 
 	g.tableController.GetEmptySeats(c)
 
@@ -264,7 +252,7 @@ func (g *TableControllereSuite) TestGetEmptySeatsTable() {
 
 	g.EqualValues(http.StatusOK, w.Code)
 
-	wantJson := `[{"id":1,"seats":10,"guest_id":null},{"id":2,"seats":10,"guest_id":null}]`
+	wantJson := `{"empty_seats":17}`
 	got, _ := io.ReadAll(res.Body)
 
 	g.Equal(wantJson, string(got))

@@ -35,13 +35,13 @@ func (srv *TableService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (srv *TableService) GetEmptySeats(ctx context.Context) ([]*domain.Table, error) {
-	tables, err := srv.repository.GetEmptySeats(ctx)
+func (srv *TableService) GetEmptySeats(ctx context.Context) (int64, error) {
+	count, err := srv.repository.GetEmptySeats(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("get all tables: %w", err)
+		return 0, fmt.Errorf("get all tables: %w", err)
 	}
 
-	return tables, nil
+	return count, nil
 }
 
 func (srv *TableService) GetById(ctx context.Context, id int64) (*domain.Table, error) {

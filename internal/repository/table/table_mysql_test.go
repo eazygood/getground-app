@@ -39,11 +39,11 @@ func (t *TableMysqlRepositorySuite) SetupTest() {
 	t.Assertions = require.New(t.T())
 
 	db, t.mock, err = sqlmock.New()
-	require.NoError(t.T(), err)
+	t.NoError(err)
 
 	t.DB, err = gorm.Open(mysql.New(mysql.Config{Conn: db, SkipInitializeWithVersion: true}), &gorm.Config{})
 
-	require.NoError(t.T(), err)
+	t.NoError(err)
 
 	t.ctrl = gomock.NewController(t.T())
 	t.mySqlTableAdapter = NewMysqlTableAdapter(t.DB)
@@ -111,22 +111,15 @@ func (t *TableMysqlRepositorySuite) TestGetEmptySeats() {
 	c, cancel := context.WithTimeout(context.Background(), time.Duration(1000))
 	defer cancel()
 
-	expected := []*domain.Table{
-		{
-			ID:    1,
-			Seats: 15,
-		},
-	}
+	rows := sqlmock.NewRows([]string{"count"}).AddRow(15)
 
-	rows := sqlmock.NewRows([]string{"id", "seats", "guest_id"}).AddRow(1, 15, nil)
-
-	t.mock.ExpectQuery("^SELECT (.+) FROM `tables` WHERE (.+)").WillReturnRows(rows)
+	t.mock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(`seats`) FROM `tables` WHERE guest_id IS NULL")).WillReturnRows(rows)
 
 	actual, err := t.mySqlTableAdapter.GetEmptySeats(c)
 
-	require.NoError(t.T(), err)
+	t.NoError(err)
 
-	t.EqualValues(expected, actual)
+	t.EqualValues(15, actual)
 }
 
 func (t *TableMysqlRepositorySuite) TestUpdateGuest() {
@@ -156,7 +149,7 @@ func (t *TableMysqlRepositorySuite) TestUpdateGuest() {
 
 	err := t.mySqlTableAdapter.Update(c, int64(tableId), *table)
 
-	require.NoError(t.T(), err)
+	t.NoError(err)
 }
 
 func (t *TableMysqlRepositorySuite) TestDeleteGuest() {
@@ -175,5 +168,5 @@ func (t *TableMysqlRepositorySuite) TestDeleteGuest() {
 
 	err := t.mySqlTableAdapter.Delete(c, int64(tableId))
 
-	require.NoError(t.T(), err)
+	t.NoError(err)
 }

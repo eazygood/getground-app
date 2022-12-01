@@ -30,10 +30,8 @@ func TestGuestListServiceSuite(t *testing.T) {
 
 func (g *GuestListServiceSuite) SetupTest() {
 	g.Assertions = require.New(g.T())
-
 	g.ctrl = gomock.NewController(g.T())
 	g.mockGuestListRepository = mockPort.NewMockGuesListRepository(g.ctrl)
-
 	g.guestListService = NewGuestListService(g.mockGuestListRepository)
 }
 
@@ -52,8 +50,8 @@ func (g *GuestListServiceSuite) TestGuestListFindAvailableTable() {
 	g.mockGuestListRepository.EXPECT().FindAvailableTable(c, port.GetGuestListFilter{}).Return(table, nil).Times(1)
 
 	actual, err := g.guestListService.FindAvailableTable(c, port.GetGuestListFilter{})
-	g.NoError(err)
 
+	g.NoError(err)
 	g.EqualValues(table, actual)
 }
 
@@ -103,8 +101,8 @@ func (g *GuestListServiceSuite) TestGuestListGetOccupiedSeats() {
 	g.mockGuestListRepository.EXPECT().GetOccupiedSeats(c).Return(tables, nil).Times(1)
 
 	actual, err := g.guestListService.GetOccupiedSeats(c)
-	g.NoError(err)
 
+	g.NoError(err)
 	g.EqualValues(tables, actual)
 }
 

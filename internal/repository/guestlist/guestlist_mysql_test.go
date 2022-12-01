@@ -38,11 +38,10 @@ func (g *GuestListMysqlRepositorySuite) SetupTest() {
 	g.Assertions = require.New(g.T())
 
 	db, g.mock, err = sqlmock.New()
-	require.NoError(g.T(), err)
+	g.NoError(err)
 
 	g.DB, err = gorm.Open(mysql.New(mysql.Config{Conn: db, SkipInitializeWithVersion: true}), &gorm.Config{})
-
-	require.NoError(g.T(), err)
+	g.NoError(err)
 
 	g.ctrl = gomock.NewController(g.T())
 	g.mySqlGuestList = NewMysqlGuestListAdapter(g.DB)
@@ -77,8 +76,7 @@ func (g *GuestListMysqlRepositorySuite) TestGetOccupiedSeats() {
 
 	actual, err := g.mySqlGuestList.GetOccupiedSeats(c)
 
-	require.NoError(g.T(), err)
-
+	g.NoError(err)
 	g.EqualValues(expected, actual)
 }
 
@@ -101,8 +99,7 @@ func (g *GuestListMysqlRepositorySuite) TestFindAvailableTable() {
 
 	actual, err := g.mySqlGuestList.FindAvailableTable(c, filter)
 
-	require.NoError(g.T(), err)
-
+	g.NoError(err)
 	g.EqualValues(expected, actual)
 }
 

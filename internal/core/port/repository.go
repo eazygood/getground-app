@@ -7,7 +7,7 @@ import (
 )
 
 type GetGuestFilter struct {
-	TimeArrived bool `json:"time_arrived"`
+	IsArrived bool `json:"is_arrived"`
 }
 
 //go:generate mockgen -source repository.go -destination=../../../mocks/core/port/repository_mock.go -package ports
@@ -21,7 +21,7 @@ type GuestRepository interface {
 
 type TableRepository interface {
 	GetById(ctx context.Context, id int64) (*domain.Table, error)
-	GetEmptySeats(ctx context.Context) ([]*domain.Table, error)
+	GetEmptySeats(ctx context.Context) (int64, error)
 	Create(ctx context.Context, table *domain.Table) (*domain.Table, error)
 	Update(ctx context.Context, id int64, table domain.Table) error
 	Delete(ctx context.Context, id int64) error

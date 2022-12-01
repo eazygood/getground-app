@@ -26,6 +26,10 @@ type TableUpdateeRequest struct {
 	GuestID int64  `json:"guest_id"`
 }
 
+type EmptySeatsResponse struct {
+	EmptySeats int64 `json:"empty_seats"`
+}
+
 type tableController struct {
 	tableService port.TableService
 	guestService port.GuestService
@@ -134,5 +138,5 @@ func (t *tableController) GetEmptySeats(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, emptySeats)
+	ctx.JSON(http.StatusOK, EmptySeatsResponse{EmptySeats: emptySeats})
 }

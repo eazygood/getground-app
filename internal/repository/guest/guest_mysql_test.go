@@ -39,11 +39,10 @@ func (g *GuestMysqlRepositorySuite) SetupTest() {
 	g.Assertions = require.New(g.T())
 
 	db, g.mock, err = sqlmock.New()
-	require.NoError(g.T(), err)
+	g.NoError(err)
 
 	g.DB, err = gorm.Open(mysql.New(mysql.Config{Conn: db, SkipInitializeWithVersion: true}), &gorm.Config{})
-
-	require.NoError(g.T(), err)
+	g.NoError(err)
 
 	g.ctrl = gomock.NewController(g.T())
 	g.mySqlGuestAdapter = NewMysqlGuestAdapter(g.DB)
@@ -71,11 +70,12 @@ func (g *GuestMysqlRepositorySuite) TestCreateGuest() {
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	g.mock.ExpectCommit()
+
 	g.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `guests` WHERE `guests`.`id` = ? ORDER BY `guests`.`id` LIMIT 1")).WithArgs(1).WillReturnRows(rows)
 
 	_, err := g.mySqlGuestAdapter.Create(c, guest)
 
-	require.NoError(g.T(), err)
+	g.NoError(err)
 }
 
 func (g *GuestMysqlRepositorySuite) TestUpdateGuest() {
@@ -98,7 +98,7 @@ func (g *GuestMysqlRepositorySuite) TestUpdateGuest() {
 
 	err := g.mySqlGuestAdapter.Update(c, 1, guest)
 
-	require.NoError(g.T(), err)
+	g.NoError(err)
 }
 
 func (g *GuestMysqlRepositorySuite) TestDeleteGuest() {
@@ -116,7 +116,7 @@ func (g *GuestMysqlRepositorySuite) TestDeleteGuest() {
 
 	err := g.mySqlGuestAdapter.Delete(c, int64(id))
 
-	require.NoError(g.T(), err)
+	g.NoError(err)
 }
 
 func (g *GuestMysqlRepositorySuite) TestGetListUser() {
@@ -124,7 +124,7 @@ func (g *GuestMysqlRepositorySuite) TestGetListUser() {
 	defer cancel()
 
 	filters := port.GetGuestFilter{
-		TimeArrived: true,
+		IsArrived: true,
 	}
 
 	now := time.Now()
@@ -135,16 +135,16 @@ func (g *GuestMysqlRepositorySuite) TestGetListUser() {
 			Name:               "Tere",
 			AccompanyingGuests: 10,
 			TimeArrived:        &now,
+			IsArrived:          true,
 		},
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "name", "accompanying_guests", "time_arrived"}).AddRow(1, "Tere", 10, now)
-	g.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `guests` WHERE time_arrived IS NOT NULL")).WillReturnRows(rows)
+	rows := sqlmock.NewRows([]string{"id", "name", "accompanying_guests", "time_arrived", "is_arrived"}).AddRow(1, "Tere", 10, now, true)
+	g.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `guests` WHERE is_arrived IS true")).WillReturnRows(rows)
 
 	guests, err := g.mySqlGuestAdapter.GetAll(c, filters)
 
-	require.NoError(g.T(), err)
-
+	g.NoError(err)
 	g.EqualValues(expected, guests)
 }
 
@@ -153,7 +153,7 @@ func (g *GuestMysqlRepositorySuite) TestGetListWithOutFilterUser() {
 	defer cancel()
 
 	filters := port.GetGuestFilter{
-		TimeArrived: true,
+		IsArrived: true,
 	}
 
 	now := time.Now()
@@ -164,23 +164,24 @@ func (g *GuestMysqlRepositorySuite) TestGetListWithOutFilterUser() {
 			Name:               "Tere",
 			AccompanyingGuests: 10,
 			TimeArrived:        &now,
+			IsArrived:          true,
 		},
 		{
 			ID:                 2,
 			Name:               "Tere2",
 			AccompanyingGuests: 0,
 			TimeArrived:        nil,
+			IsArrived:          false,
 		},
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "name", "accompanying_guests", "time_arrived"}).
-		AddRow(1, "Tere", 10, now).AddRow(2, "Tere2", 0, nil)
-	g.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `guests` WHERE time_arrived IS NOT NULL")).WillReturnRows(rows)
+	rows := sqlmock.NewRows([]string{"id", "name", "accompanying_guests", "time_arrived", "is_arrived"}).
+		AddRow(1, "Tere", 10, now, true).AddRow(2, "Tere2", 0, nil, false)
+	g.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `guests` WHERE is_arrived IS true")).WillReturnRows(rows)
 
 	guests, err := g.mySqlGuestAdapter.GetAll(c, filters)
 
-	require.NoError(g.T(), err)
-
+	g.NoError(err)
 	g.EqualValues(expected, guests)
 }
 
@@ -199,7 +200,6 @@ func (g *GuestMysqlRepositorySuite) TestGetById() {
 
 	actual, err := g.mySqlGuestAdapter.GetById(c, 1)
 
-	require.NoError(g.T(), err)
-
+	g.NoError(err)
 	g.EqualValues(expected, actual)
 }

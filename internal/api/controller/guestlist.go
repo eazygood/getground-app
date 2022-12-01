@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/eazygood/getground-app/internal/core/domain"
 	"github.com/eazygood/getground-app/internal/core/port"
@@ -18,6 +17,7 @@ type GuestListController interface {
 
 type GuestListRequest struct {
 	TableID            int `json:"table_id"`
+	GuestID            int `json:"guest_id"`
 	AccompanyingGuests int `json:"accompanying_guests"`
 }
 
@@ -36,13 +36,6 @@ func NewGuestListController(guest port.GuestService, table port.TableService, gu
 }
 
 func (g *guestListController) Create(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("guest_id"))
-
-	if err != nil {
-		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
-		return
-	}
-
 	body := &GuestListRequest{}
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		logAndAbort(ctx, errors.NewApiError(errors.InvalidInput, err))
@@ -56,12 +49,12 @@ func (g *guestListController) Create(ctx *gin.Context) {
 	table, err := g.guestListService.FindAvailableTable(ctx, filter)
 
 	if err != nil {
-		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
+		logAndAbort(ctx, errors.NewApiError(errors.NotFound, err))
 		return
 	}
 
 	// get guest if it is registered(invited)
-	guest, err := g.guestService.GetById(ctx, int64(id))
+	guest, err := g.guestService.GetById(ctx, int64(body.GuestID))
 
 	if err != nil {
 		logAndAbort(ctx, errors.NewApiError(errors.Internal, err))
@@ -69,12 +62,12 @@ func (g *guestListController) Create(ctx *gin.Context) {
 	}
 
 	if guest.IsArrived {
-		logAndAbort(ctx, errors.NewApiError(errors.NotFound, fmt.Errorf("guest already has seats")))
+		logAndAbort(ctx, errors.NewApiError(errors.InvalidInput, fmt.Errorf("guest already has seats")))
 		return
 	}
 
 	// update guest with accompanying guest
-	err = g.guestService.Update(ctx, guest.ID, &domain.Guest{
+	err = g.guestService.Update(ctx, int64(body.GuestID), &domain.Guest{
 		AccompanyingGuests: uint16(body.AccompanyingGuests),
 		IsArrived:          true,
 	})

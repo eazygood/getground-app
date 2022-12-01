@@ -29,10 +29,8 @@ func TestTableServiceSuite(t *testing.T) {
 
 func (g *TableServiceSuite) SetupTest() {
 	g.Assertions = require.New(g.T())
-
 	g.ctrl = gomock.NewController(g.T())
 	g.mockTableRepository = mockPort.NewMockTableRepository(g.ctrl)
-
 	g.tableService = NewTableService(g.mockTableRepository)
 }
 
@@ -55,6 +53,7 @@ func (g *TableServiceSuite) TestCreateTable() {
 	g.mockTableRepository.EXPECT().Create(c, gomock.Eq(request)).Return(table, nil).Times(1)
 
 	_, err := g.tableService.Create(c, table)
+
 	g.NoError(err)
 }
 
@@ -75,6 +74,7 @@ func (g *TableServiceSuite) TestCreateTableThrowError() {
 	g.mockTableRepository.EXPECT().Create(c, gomock.Eq(request)).Return(table, err).Times(1)
 
 	_, err = g.tableService.Create(c, table)
+
 	g.ErrorContains(err, "Mock Repository Error")
 }
 
@@ -85,6 +85,7 @@ func (t *TableServiceSuite) TestTableDelete() {
 	t.mockTableRepository.EXPECT().Delete(c, int64(1)).Return(nil).Times(1)
 
 	err := t.tableService.Delete(c, int64(1))
+
 	t.NoError(err)
 }
 
@@ -99,8 +100,8 @@ func (t *TableServiceSuite) TestTableGetById() {
 	t.mockTableRepository.EXPECT().GetById(c, int64(1)).Return(table, nil).Times(1)
 
 	actual, err := t.tableService.GetById(c, int64(1))
-	t.NoError(err)
 
+	t.NoError(err)
 	t.EqualValues(table, actual)
 }
 
@@ -108,21 +109,12 @@ func (t *TableServiceSuite) TestTableGetEmptySeats() {
 	gin.SetMode(gin.TestMode)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
-	tables := []*domain.Table{
-		{
-			Seats: 15,
-		},
-		{
-			Seats: 2,
-		},
-	}
-
-	t.mockTableRepository.EXPECT().GetEmptySeats(c).Return(tables, nil).Times(1)
+	t.mockTableRepository.EXPECT().GetEmptySeats(c).Return(int64(17), nil).Times(1)
 
 	actual, err := t.tableService.GetEmptySeats(c)
-	t.NoError(err)
 
-	t.EqualValues(tables, actual)
+	t.NoError(err)
+	t.EqualValues(17, actual)
 }
 
 func (t *TableServiceSuite) TestGuestUpdate() {
@@ -136,5 +128,6 @@ func (t *TableServiceSuite) TestGuestUpdate() {
 	t.mockTableRepository.EXPECT().Update(c, int64(1), table).Return(nil).Times(1)
 
 	err := t.tableService.Update(c, int64(1), table)
+
 	t.NoError(err)
 }

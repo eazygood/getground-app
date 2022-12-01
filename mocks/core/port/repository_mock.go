@@ -177,10 +177,10 @@ func (mr *MockTableRepositoryMockRecorder) GetById(ctx, id interface{}) *gomock.
 }
 
 // GetEmptySeats mocks base method.
-func (m *MockTableRepository) GetEmptySeats(ctx context.Context) ([]*domain.Table, error) {
+func (m *MockTableRepository) GetEmptySeats(ctx context.Context) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetEmptySeats", ctx)
-	ret0, _ := ret[0].([]*domain.Table)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

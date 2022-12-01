@@ -66,15 +66,16 @@ func (m *MysqlTableAdapter) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (m *MysqlTableAdapter) GetEmptySeats(ctx context.Context) ([]*domain.Table, error) {
-	var tables []*domain.Table
-	err := m.Conn.Where("guest_id IS NULL").Find(&tables).Error
+func (m *MysqlTableAdapter) GetEmptySeats(ctx context.Context) (int64, error) {
+	var count int64
+	// err := m.Conn.Model(table).Where("guest_id IS NULL").Count(&count).Error
+	err := m.Conn.Model(&domain.Table{}).Where("guest_id IS NULL").Select("seats").Count(&count).Error
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to get list of tables: %v", err.Error())
+		return 0, fmt.Errorf("failed to get list of tables: %v", err.Error())
 	}
 
-	return tables, nil
+	return count, nil
 }
 
 func (m *MysqlTableAdapter) GetOccupiedSeats(ctx context.Context) ([]*domain.Table, error) {

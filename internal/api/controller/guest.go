@@ -143,7 +143,7 @@ func (c *guestController) GetList(ctx *gin.Context) {
 	filters := port.GetGuestFilter{}
 
 	if _, ok := ctx.GetQuery("arrived"); ok {
-		filters.TimeArrived = true
+		filters.IsArrived = true
 	}
 
 	guests, err := c.guestService.GetList(ctx, filters)

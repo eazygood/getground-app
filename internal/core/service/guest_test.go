@@ -28,10 +28,8 @@ func TestGuestServiceSuite(t *testing.T) {
 
 func (g *GuestServiceSuite) SetupTest() {
 	g.Assertions = require.New(g.T())
-
 	g.ctrl = gomock.NewController(g.T())
 	g.mockGuestRepository = mockPort.NewMockGuestRepository(g.ctrl)
-
 	g.guestService = NewGuestService(g.mockGuestRepository)
 }
 
@@ -57,6 +55,7 @@ func (g *GuestServiceSuite) TestCreateGuest() {
 	g.mockGuestRepository.EXPECT().Create(c, gomock.Eq(request)).Return(guest, nil).Times(1)
 
 	_, err := g.guestService.Create(c, guest)
+
 	g.NoError(err)
 }
 
@@ -79,6 +78,7 @@ func (g *GuestServiceSuite) TestCreateGuestThrowError() {
 	g.mockGuestRepository.EXPECT().Create(c, gomock.Eq(request)).Return(guest, err).Times(1)
 
 	_, err = g.guestService.Create(c, guest)
+
 	g.ErrorContains(err, "Mock Repository Error")
 }
 
@@ -89,6 +89,7 @@ func (g *GuestServiceSuite) TestGuestDelete() {
 	g.mockGuestRepository.EXPECT().Delete(c, int64(1)).Return(nil).Times(1)
 
 	err := g.guestService.Delete(c, int64(1))
+
 	g.NoError(err)
 }
 
@@ -105,8 +106,8 @@ func (g *GuestServiceSuite) TestGuestGetById() {
 	g.mockGuestRepository.EXPECT().GetById(c, int64(1)).Return(guest, nil).Times(1)
 
 	actual, err := g.guestService.GetById(c, int64(1))
-	g.NoError(err)
 
+	g.NoError(err)
 	g.EqualValues(guest, actual)
 }
 
@@ -124,6 +125,7 @@ func (g *GuestServiceSuite) TestGuestGetByIdThrowError() {
 	g.mockGuestRepository.EXPECT().GetById(c, int64(1)).Return(guest, err).Times(1)
 
 	_, err = g.guestService.GetById(c, int64(1))
+
 	g.ErrorContains(err, "Mock Repository Error")
 }
 
@@ -142,8 +144,8 @@ func (g *GuestServiceSuite) TestGuestGetList() {
 	g.mockGuestRepository.EXPECT().GetAll(c, port.GetGuestFilter{}).Return(guests, nil).Times(1)
 
 	actual, err := g.guestService.GetList(c, port.GetGuestFilter{})
-	g.NoError(err)
 
+	g.NoError(err)
 	g.EqualValues(guests, actual)
 }
 
@@ -180,5 +182,6 @@ func (g *GuestServiceSuite) TestGuestUpdate() {
 	g.mockGuestRepository.EXPECT().Update(c, int64(1), guest).Return(nil).Times(1)
 
 	err := g.guestService.Update(c, int64(1), guest)
+
 	g.NoError(err)
 }

@@ -22,7 +22,7 @@ type GuestListService interface {
 
 type TableService interface {
 	GetById(ctx context.Context, id int64) (*domain.Table, error)
-	GetEmptySeats(ctx context.Context) ([]*domain.Table, error)
+	GetEmptySeats(ctx context.Context) (int64, error)
 	Create(ctx context.Context, table *domain.Table) (*domain.Table, error)
 	Update(ctx context.Context, id int64, table domain.Table) error
 	Delete(ctx context.Context, id int64) error
