@@ -132,9 +132,9 @@ response:
 ### Count number of empty seats
 
 ```
-GET /seats_empty
+GET /empty_seats
 response:
 {
-    "seats_empty": int
+    "empty_seats": int
 }
 ```
