@@ -2,18 +2,17 @@
 We added basic project skeleton with docker-compose. (optional)
 Feel free to refactor but provide us with good instructions to start the application
 ```
-make docker-up
+make
 ```
 
-Update the `docker/mysql/dump.sql` to initialize the mysql database
+ `docker/mysql/dump.sql` has initializion of the mysql database
 
 
 ## Summary
 
-- This task should take approximately 90-120 minutes.
-- You can use the provided skeleton project structure (optional). If you are using the following supported languages:
+- This task has taken approximately 2 days due to some issue with testing.
+- Languages taken:
   - `golang`
-  - `java`
 
 ## Requirements
 
@@ -68,7 +67,7 @@ response:
         {
             "table_id": int,
             "seats" int
-            "guest_id": "string",
+            "guest_id": string,
         }, ...
     ]
 }
@@ -93,6 +92,23 @@ response:
     "accompanying_guests": int,
     "time_arrived": date,
     "is_arrived": boolean
+}
+```
+
+### Guest Update
+
+```
+PUT /guests/:guest_id
+body:
+{
+    "name": string
+    "accompanying_guests": int
+    "time_arrived": datetime
+    "is_arrived": boolean
+}
+response:
+{
+    "message": string
 }
 ```
 
@@ -129,12 +145,53 @@ response:
 }
 ```
 
-### Count number of empty seats
+### Add Table
+
+```
+POST /tables
+body:
+{
+    "seats": int
+}
+response:
+{
+    "id": int
+    "seats": int
+    "guest_id": int | null,
+}
+```
+### Update Table
+
+```
+PUT /tables/:table_id
+body:
+{
+    "seats": int
+    "guest_id": int
+}
+
+response:
+{
+    "message": string
+}
+```
+### Count number of empty seats from tables
 
 ```
 GET /empty_seats
 response:
 {
     "empty_seats": int
+}
+```
+
+### Delete Table
+
+```
+DELETE /tables/:table_id
+
+response:
+{
+    "message": string
 }
 ```
